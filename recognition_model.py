@@ -165,6 +165,6 @@ class TransformerModel(nn.Module):
         return output
 
 
-def get_model(device):
+def get_model():
     return TransformerModel(len(ALPHABET), hidden=HIDDEN, enc_layers=ENC_LAYERS, dec_layers=DEC_LAYERS,
-                            nhead=N_HEADS, dropout=DROPOUT).to(device)
+                            nhead=N_HEADS, dropout=DROPOUT)
