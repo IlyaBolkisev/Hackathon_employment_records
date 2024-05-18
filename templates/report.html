@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    <title>Employment records recognition</title>
+{% endblock %}
+
+{% block content %}
+    <div class="container pt-5">
+        <div class="row">
+            <h3>Результаты распознавания</h3>
+        </div>
+            <div>
+                {% for image in images %}
+                    <div class="d-flex flex-row border border-success rounded p-3">
+                        <div class="col-6 p-3 m-1">
+                            <img src="data:image/jpeg;base64, {{ image }}" class="w-100">
+                        </div>
+                        <div class="col-6 d-flex flex-column justify-content-around">
+                            {% for pred in preds %}
+                                <div class="border border-2 rounded m-1 p-1">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">id</div>
+                                                <th scope="col">date</div>
+                                                <th scope="col">document</div>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">
+                                                    <input class="form-control border-3 {{pred['id']['confidence']}} m-1" type="text" value="{{pred['id']['text']}}">
+                                                    <img src="data:image/jpeg;base64, {{pred['id']['crop']}}" style="height: 50px;" alt="No image">
+                                                </th>
+                                                <td>
+                                                    <input class="form-control border-3 {{pred['date']['confidence']}} m-1" type="text" value="{{pred['date']['text']}}">
+                                                    <img src="data:image/jpeg;base64, {{pred['date']['crop']}}" style="height: 50px;" alt="No image">
+                                                </td>
+                                                <td>
+                                                    <input class="form-control border-3 {{pred['doc']['confidence']}} m-1" type="text" value="{{pred['doc']['text']}}">
+                                                    <img src="data:image/jpeg;base64, {{pred['doc']['crop']}}" style="height: 50px;" alt="No image">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <span class="fw-bold">info</span>
+                                    <div class="border p-1">
+                                        <input class="form-control border-3 {{pred['info']['confidence']}} m-1" type="text" value="{{pred['info']['text']}}">
+                                        <img src="data:image/jpeg;base64, {{pred['info']['crop']}}" style="height: 100px;" alt="No image">
+                                    </div>
+                                    <span class="fw-bold">stamp</span>
+                                    <div>
+                                        <input class="form-control border-3 {{pred['stamp']['confidence']}} m-1" type="text" value="{{pred['stamp']['text']}}">
+                                        <img src="data:image/jpeg;base64, {{pred['stamp']['crop']}}" style="height: 100px;" alt="No image">
+                                    </div>
+                                    <div class="col-3">
+                                        <input type="submit" class="btn btn-success">
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

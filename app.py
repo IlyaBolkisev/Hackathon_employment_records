@@ -7,22 +7,18 @@ import os
 import fitz
 from PIL import Image
 
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, render_template
 
 import json
 app = Flask(__name__, static_folder='static')
-
-placeholder_img = cv2.imread('placeholder.jpg', cv2.IMREAD_COLOR)
+app.secret_key = 'asdbas'
+placeholder_img = cv2.imread('./images/placeholder.jpg', cv2.IMREAD_COLOR)
 
 def get_image(data):
-    # if os.path.exists(data[:100]):
-    #     with open(data, 'rb') as f:
-    #         data = f.read()
-    # elif # check if str:
-    #     data = base64.b64decode(data)
     img_arr = np.frombuffer(data, np.uint8)
-    img = cv2.imdecode(img_arr, cv2.IMREAD_COLOR)
+    img = cv2.imdecode(img_arr, cv2.IMREAD_COLOR)[:,:,::-1]
     return img
+
 def img2b64(img):
     """Converts image to base64 encoded string
     Args:
@@ -52,7 +48,7 @@ def parse_pdf(file_data):
         page_img = doc.load_page(i).get_pixmap(dpi=200)
         im = np.asarray(np.frombuffer(page_img.samples, dtype=np.uint8).reshape((page_img.h, page_img.w, page_img.n)))
         im = im.copy()
-        im.flags.writeable = True
+        
         images.append(im)
 
     return images
@@ -63,42 +59,49 @@ def get_main():
         return render_template('main.html')
     if request.method == 'POST':
         doc_file = request.files.getlist("doc-file")
-        # img = get_image(doc_file.read())
+        
         if len(doc_file) == 1 and doc_file[0].filename.split('.')[-1].lower() == 'pdf':
             imgs = parse_pdf(doc_file[0].read())
         else:
             imgs = [get_image(file.read()) for file in doc_file]
         
-        im = imgs[0]
-        print(im.shape)
-        with open('layout2.json', 'r', encoding='utf-8') as f:
-            layout = json.load(f)
+        new_imgs = []
         
-        preds = []
-        for row in layout:
-            for ent in row:
-                ent_dict = row[ent]
-                start = (int(ent_dict['x']), int(ent_dict['y']))
-                end = (int(ent_dict['x'])+int(ent_dict['w']), int(ent_dict['y'])+int(ent_dict['h']))
-                if (ent == 'id'and ent_dict['text'] == '-1') or ent_dict['text'] == "":
-                    continue
-                crop = img2b64(im[start[1]:end[1], start[0]:end[0]]) \
-                    if (end[1]-start[1] + end[0]-start[0]) > 0 \
-                    else img2b64(placeholder_img)
-                preds.append({
-                    'tag': ent,
-                    'pred': ent_dict['text'],
-                    'crop': crop
-                })
-                # preds.append(ent_dict['text'])
-                row[ent]['crop'] = img2b64(im[start[1]:end[1], start[0]:end[0]])
-                cv2.rectangle(im, start, end, (255, 0, 0), 3)
-                cv2.putText(im, ent_dict['text'], (int(ent_dict['x']), max(0, int(ent_dict['y'])-5)), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 2)
-        imgs = [im]
-        # print(preds)
-        return render_template('report.html', images=[img2b64(img) for img in imgs], preds=layout)
+        for i in range(len(imgs)):
+            im = imgs[0].copy()
+            with open('layout2.json', 'r', encoding='utf-8') as f:
+                layout = json.load(f)
+            
+            for row in layout:
+                for ent in row:
+                    ent_dict = row[ent]
+                    start = (int(ent_dict['x']), int(ent_dict['y']))
+                    end = (int(ent_dict['x'])+int(ent_dict['w']), int(ent_dict['y'])+int(ent_dict['h']))
 
+                    confidence = np.random.random()
+                    row[ent]['confidence'] = 'border-danger' if confidence < 0.3 else 'border-warning' if confidence < 0.5 else 'border-success'
+                    
+                    crop = img2b64(imgs[i][start[1]:end[1], start[0]:end[0]]) \
+                        if (end[1]-start[1] + end[0]-start[0]) > 0 \
+                        else img2b64(placeholder_img)
+                    
+                    row[ent]['crop'] = crop
+                    
+                    cv2.rectangle(im, start, end, (255, 0, 0), 2)
+                    cv2.putText(im, ent, (int(ent_dict['x']), max(0, int(ent_dict['y'])-5)), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 2)
+            new_imgs.append(im)
+        
+        if not os.path.exists('preds'):
+            os.mkdir('preds')
+        if not os.path.exists('corrects'):
+            os.mkdir('corrects')
+
+        pred_filename = len(os.listdir('preds'))
+        with open(f'preds/{pred_filename}.json', 'w') as f:
+            json.dump(layout, f)
     
+        return render_template('report.html', images=[img2b64(img) for img in new_imgs], preds=layout)
+
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0')
