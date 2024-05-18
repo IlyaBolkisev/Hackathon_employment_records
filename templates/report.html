@@ -53,11 +53,11 @@
                                         <input class="form-control border-3 {{pred['stamp']['confidence']}} m-1" type="text" value="{{pred['stamp']['text']}}">
                                         <img src="data:image/jpeg;base64, {{pred['stamp']['crop']}}" style="height: 100px;" alt="No image">
                                     </div>
-                                    <div class="col-3">
-                                        <input type="submit" class="btn btn-success">
-                                    </div>
                                 </div>
                             {% endfor %}
+                            <div class="col-3">
+                                <input type="submit" class="btn btn-success">
+                            </div>
                         </div>
                     </div>
                     
