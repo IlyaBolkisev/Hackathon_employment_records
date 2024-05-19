@@ -34,15 +34,16 @@ def wrapper(imgs):
             block = get_blocks(id_segments, rows)
 
             stamps = detect_stamps(table)
+            cols = [0]+list(cols)+[table.shape[1]]
             for i in range(len(block)):
                 layout[-1][-1].append(generate_empty_dict())
-                for i, category in enumerate(['id', 'date', 'info', 'doc']):
-                    if i + 1 < len(cols):
-                        layout[-1][-1][-1][category] = {"text": "", "x": x_t+cols[i], "y": y_t+block[i][0],
-                                                    "w": cols[i-1], "h": block[i][1] - block[i][0]}
+                for j, category in enumerate(['id', 'date', 'info', 'doc']):
+                    if j + 1 < len(cols):
+                        layout[-1][-1][-1][category] = {"text": "", "x": int(x_t+cols[i]), "y": int(y_t+block[i][0]),
+                                                        "w": int(cols[i-1]), "h": int(block[i][1] - block[i][0])}
 
                 for x, y, r in stamps:
                     if block[i][0] < y <= block[i][1]:
                         layout[-1][-1][-1]['stamp'] = {"text": "", "x": int(x_t+x-r), "y": int(y_t+y-r),
-                                                   "w": int(2*r), "h": int(2*r)}
+                                                       "w": int(2*r), "h": int(2*r)}
     return layout
