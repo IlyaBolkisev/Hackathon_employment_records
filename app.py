@@ -75,8 +75,6 @@ def get_main():
         new_imgs = []
 
         layout = wrapper(imgs)
-        # with open('layout2.json', 'r', encoding='utf-8') as f:
-        #     layout = json.load(f)
 
         for i in range(len(imgs)):
             im = imgs[0].copy()
