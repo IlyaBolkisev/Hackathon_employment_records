@@ -75,30 +75,31 @@ def get_main():
         new_imgs = []
 
         layout = wrapper(imgs)
-        with open('layout2.json', 'r', encoding='utf-8') as f:
-            layout = json.load(f)
+        # with open('layout2.json', 'r', encoding='utf-8') as f:
+        #     layout = json.load(f)
 
         for i in range(len(imgs)):
             im = imgs[0].copy()
             layout_page = layout[i]
             
-            for row in layout:
-                for ent in row:
-                    ent_dict = row[ent]
-                    start = (int(ent_dict['x']), int(ent_dict['y']))
-                    end = (int(ent_dict['x'])+int(ent_dict['w']), int(ent_dict['y'])+int(ent_dict['h']))
+            for table in layout_page:
+                for row in table:
+                    for ent in row:
+                        ent_dict = row[ent]
+                        start = (int(ent_dict['x']), int(ent_dict['y']))
+                        end = (int(ent_dict['x'])+int(ent_dict['w']), int(ent_dict['y'])+int(ent_dict['h']))
 
-                    confidence = np.random.random()
-                    row[ent]['confidence'] = 'border-danger' if confidence < 0.3 else 'border-warning' if confidence < 0.5 else 'border-success'
-                    
-                    crop = img2b64(imgs[i][start[1]:end[1], start[0]:end[0]]) \
-                        if (end[1]-start[1] + end[0]-start[0]) > 0 \
-                        else img2b64(placeholder_img)
-                    
-                    row[ent]['crop'] = crop
-                    
-                    cv2.rectangle(im, start, end, (255, 0, 0), 2)
-                    cv2.putText(im, ent, (int(ent_dict['x']), max(0, int(ent_dict['y'])-5)), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 2)
+                        confidence = np.random.random()
+                        row[ent]['confidence'] = 'border-danger' if confidence < 0.3 else 'border-warning' if confidence < 0.5 else 'border-success'
+
+                        crop = img2b64(imgs[i][start[1]:end[1], start[0]:end[0]]) \
+                            if (end[1]-start[1] + end[0]-start[0]) > 0 \
+                            else img2b64(placeholder_img)
+
+                        row[ent]['crop'] = crop
+
+                        cv2.rectangle(im, start, end, (255, 0, 0), 2)
+                        cv2.putText(im, ent, (int(ent_dict['x']), max(0, int(ent_dict['y'])-5)), cv2.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255), 2)
             new_imgs.append(im)
         
         if not os.path.exists('preds'):
