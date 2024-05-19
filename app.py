@@ -10,14 +10,19 @@ from PIL import Image
 from flask import Flask, request, render_template
 
 import json
+
+from modules.wrapper import wrapper
+
 app = Flask(__name__, static_folder='static')
 app.secret_key = 'asdbas'
 placeholder_img = cv2.imread('./images/placeholder.jpg', cv2.IMREAD_COLOR)
+
 
 def get_image(data):
     img_arr = np.frombuffer(data, np.uint8)
     img = cv2.imdecode(img_arr, cv2.IMREAD_COLOR)[:,:,::-1]
     return img
+
 
 def img2b64(img):
     """Converts image to base64 encoded string
@@ -41,6 +46,7 @@ def img2b64(img):
 
     return base64.b64encode(buffer.getvalue()).decode('utf-8')
 
+
 def parse_pdf(file_data):
     images = []
     doc = fitz.open(None, file_data, 'pdf')
@@ -52,6 +58,7 @@ def parse_pdf(file_data):
         images.append(im)
 
     return images
+
 
 @app.route('/', methods=['GET', 'POST'])
 def get_main():
@@ -66,11 +73,14 @@ def get_main():
             imgs = [get_image(file.read()) for file in doc_file]
         
         new_imgs = []
-        
+
+        layout = wrapper(imgs)
+        with open('layout2.json', 'r', encoding='utf-8') as f:
+            layout = json.load(f)
+
         for i in range(len(imgs)):
             im = imgs[0].copy()
-            with open('layout2.json', 'r', encoding='utf-8') as f:
-                layout = json.load(f)
+            layout_page = layout[i]
             
             for row in layout:
                 for ent in row:

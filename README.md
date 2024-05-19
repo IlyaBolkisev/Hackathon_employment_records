@@ -11,4 +11,4 @@
 Yolov8-obb (https://drive.google.com/file/d/1SC3NXHArQ--Tn_AO6Nc_xlA0ua-GURGr/view?usp=sharing) <br>
 Text recognition (https://drive.google.com/file/d/1W00HlzjPPRN0rJQBoDlmsz6xM7FEFK_H/view?usp=sharing)
 
-Докер: <br>
+Докер: <br>/
