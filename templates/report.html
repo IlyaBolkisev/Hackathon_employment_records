@@ -11,13 +11,13 @@
         </div>
             <div>
                 {% for image in images %}
+                    {% set outer_loop = loop%}
                     <div class="d-flex flex-row border border-success rounded p-3">
                         <div class="col-6 p-3 m-1">
                             <img src="data:image/jpeg;base64, {{ image }}" class="w-100">
                         </div>
                         <div class="col-6 d-flex flex-column justify-content-around">
-                            {% for img in preds %}
-                            {% for tbl in img %}
+                            {% for pred in preds %}
                                 <div class="border border-2 rounded m-1 p-1">
                                     <table class="table">
                                         <thead>
@@ -30,32 +30,31 @@
                                         <tbody>
                                             <tr>
                                                 <th scope="row">
-                                                    <input class="form-control border-3 {{tbl['id']['confidence']}} m-1" type="text" value="{{tbl['id']['text']}}">
-                                                    <img src="data:image/jpeg;base64, {{pred['id']['crop']}}" style="height: 50px;" alt="No image">
+                                                    <input class="form-control border-3 {{pred[outer_loop.index0]['id']['confidence']}} m-1" type="text" value="{{pred[outer_loop.index0]['id']['text']}}">
+                                                    <img src="data:image/jpeg;base64, {{pred[outer_loop.index0]['id']['crop']}}" style="height: 50px;" alt="No image">
                                                 </th>
                                                 <td>
-                                                    <input class="form-control border-3 {{tbl['date']['confidence']}} m-1" type="text" value="{{tbl['date']['text']}}">
-                                                    <img src="data:image/jpeg;base64, {{pred['date']['crop']}}" style="height: 50px;" alt="No image">
+                                                    <input class="form-control border-3 {{pred[outer_loop.index0]['date']['confidence']}} m-1" type="text" value="{{pred[outer_loop.index0]['date']['text']}}">
+                                                    <img src="data:image/jpeg;base64, {{pred[outer_loop.index0]['date']['crop']}}" style="height: 50px;" alt="No image">
                                                 </td>
                                                 <td>
-                                                    <input class="form-control border-3 {{tbl['doc']['confidence']}} m-1" type="text" value="{{tbl['doc']['text']}}">
-                                                    <img src="data:image/jpeg;base64, {{pred['doc']['crop']}}" style="height: 50px;" alt="No image">
+                                                    <input class="form-control border-3 {{pred[outer_loop.index0]['doc']['confidence']}} m-1" type="text" value="{{pred[outer_loop.index0]['doc']['text']}}">
+                                                    <img src="data:image/jpeg;base64, {{pred[outer_loop.index0]['doc']['crop']}}" style="height: 50px;" alt="No image">
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
                                     <span class="fw-bold">info</span>
                                     <div class="border p-1">
-                                        <input class="form-control border-3 {{tbl['info']['confidence']}} m-1" type="text" value="{{tbl['info']['text']}}">
-                                        <img src="data:image/jpeg;base64, {{pred['info']['crop']}}" style="height: 100px;" alt="No image">
+                                        <input class="form-control border-3 {{pred[outer_loop.index0]['info']['confidence']}} m-1" type="text" value="{{pred[outer_loop.index0]['info']['text']}}">
+                                        <img src="data:image/jpeg;base64, {{pred[outer_loop.index0]['info']['crop']}}" style="height: 100px;" alt="No image">
                                     </div>
                                     <span class="fw-bold">stamp</span>
                                     <div>
-                                        <input class="form-control border-3 {{tbl['stamp']['confidence']}} m-1" type="text" value="{{tbl['stamp']['text']}}">
-                                        <img src="data:image/jpeg;base64, {{pred['stamp']['crop']}}" style="height: 100px;" alt="No image">
+                                        <input class="form-control border-3 {{pred[outer_loop.index0]['stamp']['confidence']}} m-1" type="text" value="{{pred[outer_loop.index0]['stamp']['text']}}">
+                                        <img src="data:image/jpeg;base64, {{pred[outer_loop.index0]['stamp']['crop']}}" style="height: 100px;" alt="No image">
                                     </div>
                                 </div>
-                            {% endfor %}
                             {% endfor %}
                             <div class="col-3">
                                 <input type="submit" class="btn btn-success">
