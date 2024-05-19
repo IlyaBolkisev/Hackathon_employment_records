@@ -1,6 +1,3 @@
-import json
-
-import cv2
 import numpy as np
 import torch
 
@@ -41,8 +38,8 @@ def wrapper(imgs):
                 layout[-1][-1].append(generate_empty_dict())
                 for j, category in enumerate(['id', 'date', 'info', 'doc']):
                     if j + 1 < len(cols):
-                        layout[-1][-1][-1][category] = {"text": "", "x": int(x_t+cols[i]), "y": int(y_t+block[i][0]),
-                                                        "w": int(cols[i+1] - cols[i]), "h": int(block[i][1] - block[i][0])}
+                        layout[-1][-1][-1][category] = {"text": "", "x": int(x_t+cols[j]), "y": int(y_t+block[i][0]),
+                                                        "w": int(cols[j+1] - cols[j]), "h": int(block[i][1] - block[i][0])}
 
                 for x, y, r in stamps:
                     if block[i][0] < y <= block[i][1]:
